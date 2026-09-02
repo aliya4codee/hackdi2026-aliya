@@ -1,0 +1,26 @@
+{
+  "name": "hackdi-2026-starter",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "vite": "^8.0.0"
+  },
+  "scripts": {
+    "dev": "npm run --workspace @hackdi/web dev",
+    "build": "npm run --workspace @hackdi/web build",
+    "preview": "npm run --workspace @hackdi/web preview",
+    "typecheck": "npm run --workspace @hackdi/web typecheck",
+    "deploy": "npm run --workspace @hackdi/web deploy",
+    "cf-typegen": "npm run --workspace @hackdi/web cf-typegen",
+    "db:create": "npm exec --workspace=@hackdi/web -- wrangler d1 create",
+    "db:migrate:local": "npm run --workspace @hackdi/web db:migrate:local",
+    "db:migrate:remote": "npm run --workspace @hackdi/web db:migrate:remote",
+    "db:migration:create": "npm exec --workspace=@hackdi/web -- wrangler d1 migrations create"
+  }
+}

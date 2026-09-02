@@ -1,0 +1,11 @@
+node_modules
+apps/*/node_modules
+.wrangler
+apps/*/.wrangler
+.output
+apps/*/.output
+dist
+apps/*/dist
+.env
+.env.*
+*.local
