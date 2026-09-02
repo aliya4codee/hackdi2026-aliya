@@ -127,10 +127,6 @@ npm run db:migration:create -- DB add-a-column
 - **Port 3000 is already busy:** stop the other dev server, or run `npm run --workspace @hackdi/web dev -- --port 3001`.
 - **Deploy rejects the Worker or D1 name:** use lowercase letters, digits, and hyphens; the name must be available in your account.
 
-## Why Workers, not Pages or “R1”?
-
-TanStack Start's current official Cloudflare deployment route is a full-stack **Worker** using the Cloudflare Vite plugin. Workers also serve the app's static assets, so a separate Pages project is not needed. This starter interprets the proposed “R1” data service as **D1**, Cloudflare's SQLite database. R2 object storage is intentionally not part of this example.
-
 Read the official references when you want to go further:
 
 - [TanStack Start on Cloudflare Workers](https://developers.cloudflare.com/workers/framework-guides/web-apps/tanstack-start/)
