@@ -1,129 +1,310 @@
-import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
-import type { FormEvent } from 'react'
-
-import { createTask, deleteTask, listTasks, toggleTask, updateTask, type Task } from '../tasks'
 
 export const Route = createFileRoute('/')({
-  loader: () => listTasks(),
   component: Home,
 })
 
-function Home() {
-  const tasks = Route.useLoaderData()
-  const router = useRouter()
-  const [newTitle, setNewTitle] = useState('')
-  const [editingId, setEditingId] = useState<number | null>(null)
-  const [editingTitle, setEditingTitle] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [isSaving, setIsSaving] = useState(false)
+const categories = [
+  { name: 'Food & Dining', icon: '🍽️' },
+  { name: 'Healthcare', icon: '🏥' },
+  { name: 'Legal', icon: '⚖️' },
+  { name: 'Technology', icon: '💻' },
+  { name: 'Home Services', icon: '🏠' },
+  { name: 'Creative', icon: '🎨' },
+  { name: 'Education', icon: '📚' },
+  { name: 'Beauty', icon: '💄' },
+  { name: 'Professional', icon: '💼' },
+]
 
-  async function refresh() {
-    await router.invalidate()
+function Home() {
+  const [search, setSearch] = useState('')
+  const [zipCode, setZipCode] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+
+  function handleCategoryClick(category: string) {
+    setSelectedCategory(category)
   }
 
-  async function runMutation(action: () => Promise<unknown>) {
-    setError(null)
-    setIsSaving(true)
-    try {
-      await action()
-      await refresh()
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Something went wrong. Please try again.')
-    } finally {
-      setIsSaving(false)
+  function handleSearch() {
+    if (search.trim()) {
+      setSelectedCategory(search.trim())
     }
   }
 
-  function handleCreate(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    void runMutation(async () => {
-      await createTask({ data: { title: newTitle } })
-      setNewTitle('')
-    })
-  }
-
-  function startEditing(task: Task) {
-    setError(null)
-    setEditingId(task.id)
-    setEditingTitle(task.title)
-  }
-
-  function handleEdit(event: FormEvent<HTMLFormElement>, id: number) {
-    event.preventDefault()
-    void runMutation(async () => {
-      await updateTask({ data: { id, title: editingTitle } })
-      setEditingId(null)
-      setEditingTitle('')
-    })
-  }
-
   return (
-    <main className="page-shell">
-      <section className="task-card" aria-labelledby="page-title">
-        <p className="eyebrow">HackDI starter</p>
-        <h1 id="page-title">Tiny Task List</h1>
-        <p className="intro">A TanStack Start route, a Cloudflare Worker, and a D1 database in one small app.</p>
-        <p className="public-note"><strong>Workshop note:</strong> this list is public and anyone with the link can edit it.</p>
+    <main className="home-page">
 
-        <form className="new-task-form" onSubmit={handleCreate}>
-          <label htmlFor="new-task">What needs doing?</label>
-          <div className="form-row">
-            <input
-              id="new-task"
-              value={newTitle}
-              onChange={(event) => setNewTitle(event.target.value)}
-              maxLength={120}
-              placeholder="Ship a hackathon project"
-              disabled={isSaving}
-            />
-            <button type="submit" disabled={isSaving}>Add task</button>
+      {/* Navigation */}
+      <nav className="navbar">
+        <div className="nav-container">
+          <a href="/" className="logo">
+            <span className="logo-mark">✦</span>
+            <span>Connected Ummah</span>
+          </a>
+
+          <div className="nav-links">
+            <a href="#categories">Explore</a>
+            <a href="#about">About</a>
+            <button className="nav-business-button">
+              Add a Business
+            </button>
           </div>
-        </form>
+        </div>
+      </nav>
 
-        {error ? <p className="error" role="alert">{error}</p> : null}
+      {/* Hero */}
+      <section className="hero">
+        <div className="hero-content">
 
-        {tasks.length === 0 ? (
-          <p className="empty-state">No tasks yet. Add the first one above.</p>
-        ) : (
-          <ul className="task-list">
-            {tasks.map((task) => (
-              <li className="task-row" key={task.id}>
-                {editingId === task.id ? (
-                  <form className="edit-form" onSubmit={(event) => handleEdit(event, task.id)}>
-                    <input
-                      aria-label="Edit task title"
-                      autoFocus
-                      value={editingTitle}
-                      onChange={(event) => setEditingTitle(event.target.value)}
-                      maxLength={120}
-                      disabled={isSaving}
-                    />
-                    <button type="submit" disabled={isSaving}>Save</button>
-                    <button type="button" className="button-secondary" onClick={() => setEditingId(null)} disabled={isSaving}>Cancel</button>
-                  </form>
-                ) : (
-                  <>
-                    <label className="task-label">
-                      <input
-                        type="checkbox"
-                        checked={task.completed}
-                        onChange={() => void runMutation(() => toggleTask({ data: { id: task.id, completed: !task.completed } }))}
-                        disabled={isSaving}
-                      />
-                      <span className={task.completed ? 'completed' : undefined}>{task.title}</span>
-                    </label>
-                    <div className="task-actions">
-                      <button type="button" className="button-secondary" onClick={() => startEditing(task)} disabled={isSaving}>Edit</button>
-                      <button type="button" className="button-danger" onClick={() => void runMutation(() => deleteTask({ data: { id: task.id } }))} disabled={isSaving}>Delete</button>
-                    </div>
-                  </>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
+          <div className="hero-badge">
+            <span>✦</span>
+            Built for community
+          </div>
+
+          <h1>
+            Find your people.
+            <br />
+            <span>Support your community.</span>
+          </h1>
+
+          <p className="hero-description">
+            Discover Muslim-owned businesses and professionals
+            recommended by people in your community.
+          </p>
+
+          {/* Search */}
+          <div className="search-container">
+
+            <div className="search-input-wrapper">
+              <span className="search-icon">⌕</span>
+
+              <input
+                type="text"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') {
+                    handleSearch()
+                  }
+                }}
+                placeholder="What are you looking for?"
+                aria-label="Search for a business or professional"
+              />
+            </div>
+
+            <button
+              type="button"
+              className="search-button"
+              onClick={handleSearch}
+            >
+              Search
+            </button>
+
+          </div>
+
+          <p className="search-hint">
+            Try "dentist", "photographer", "restaurant", or "accountant"
+          </p>
+
+        </div>
       </section>
+
+      {/* Location Search */}
+      {selectedCategory && (
+        <section className="location-section">
+          <div className="location-card">
+
+            <div className="location-icon">
+              📍
+            </div>
+
+            <div className="location-content">
+              <p className="location-label">
+                FINDING
+              </p>
+
+              <h2>
+                {selectedCategory}
+              </h2>
+
+              <p>
+                Where are you looking?
+              </p>
+
+              <div className="location-form">
+
+                <input
+                  type="text"
+                  value={zipCode}
+                  onChange={(event) => setZipCode(event.target.value)}
+                  placeholder="Enter ZIP code"
+                  maxLength={5}
+                  aria-label="ZIP code"
+                />
+
+                <button type="button">
+                  Find nearby
+                </button>
+
+              </div>
+            </div>
+
+            <button
+              type="button"
+              className="close-location"
+              onClick={() => setSelectedCategory(null)}
+              aria-label="Close location search"
+            >
+              ×
+            </button>
+
+          </div>
+        </section>
+      )}
+
+      {/* Categories */}
+      <section className="categories-section" id="categories">
+        <div className="section-container">
+
+          <div className="section-heading">
+            <div>
+              <p className="section-eyebrow">
+                EXPLORE THE UMMAH
+              </p>
+
+              <h2>
+                What are you looking for?
+              </h2>
+            </div>
+
+            <p>
+              Find trusted businesses and professionals
+              recommended by your community.
+            </p>
+          </div>
+
+          <div className="categories-grid">
+
+            {categories.map((category) => (
+              <button
+                type="button"
+                key={category.name}
+                className={`category-card ${
+                  selectedCategory === category.name
+                    ? 'category-card-selected'
+                    : ''
+                }`}
+                onClick={() => handleCategoryClick(category.name)}
+              >
+                <span className="category-icon">
+                  {category.icon}
+                </span>
+
+                <span className="category-name">
+                  {category.name}
+                </span>
+
+                <span className="category-arrow">
+                  →
+                </span>
+              </button>
+            ))}
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* Community Trust */}
+      <section className="trust-section" id="about">
+        <div className="section-container">
+
+          <div className="trust-content">
+
+            <div>
+              <p className="section-eyebrow">
+                COMMUNITY POWERED
+              </p>
+
+              <h2>
+                Discover people you can trust.
+              </h2>
+
+              <p>
+                Connected Ummah makes it easier to discover
+                Muslim-owned businesses and professionals while
+                keeping community recommendations at the center.
+              </p>
+            </div>
+
+            <div className="trust-stats">
+
+              <div className="trust-stat">
+                <span>✦</span>
+                <strong>Community</strong>
+                <p>Recommendations</p>
+              </div>
+
+              <div className="trust-stat">
+                <span>✓</span>
+                <strong>Trusted</strong>
+                <p>Local connections</p>
+              </div>
+
+              <div className="trust-stat">
+                <span>♡</span>
+                <strong>Support</strong>
+                <p>Muslim-owned</p>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* Business CTA */}
+      <section className="business-section">
+        <div className="business-card">
+
+          <div>
+            <p className="section-eyebrow">
+              ARE YOU A BUSINESS OWNER?
+            </p>
+
+            <h2>
+              Make your business part of the community.
+            </h2>
+
+            <p>
+              Help people discover your business and connect
+              with customers who want to support the Ummah.
+            </p>
+          </div>
+
+          <button type="button" className="business-cta">
+            Add your business →
+          </button>
+
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="footer">
+        <div className="footer-container">
+          <div className="logo">
+            <span className="logo-mark">✦</span>
+            <span>Connected Ummah</span>
+          </div>
+
+          <p>
+            Connecting people, businesses, and community.
+          </p>
+        </div>
+      </footer>
+
     </main>
   )
 }
