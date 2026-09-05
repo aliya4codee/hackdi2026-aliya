@@ -1,19 +1,22 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "replace-with-your-worker-name",
-  "compatibility_date": "2026-09-01",
-  "compatibility_flags": ["nodejs_compat"],
-  "main": "@tanstack/react-start/server-entry",
-  "observability": {
-    "enabled": true
-  },
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "replace-with-your-d1-database-name",
-      "database_id": "00000000-0000-0000-0000-000000000000",
-      "preview_database_id": "local-task-list",
-      "migrations_dir": "migrations"
-    }
-  ]
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "hackdi-tasks-aliya",
+	"compatibility_date": "2026-09-01",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"main": "@tanstack/react-start/server-entry",
+	"observability": {
+		"enabled": true
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "hackdi-tasks-aliya",
+			"database_id": "2cc9ccd8-c5f0-4eeb-b2c3-3c3fa38bd249",
+			"preview_database_id": "local-task-list",
+			"migrations_dir": "migrations"
+		},
+		
+	]
 }
