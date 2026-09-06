@@ -6,7 +6,6 @@ export const Route = createFileRoute('/')({
 })
 
 const categories = [
-  { name: 'Food & Dining', icon: '🍽️' },
   { name: 'Healthcare', icon: '🏥' },
   { name: 'Legal', icon: '⚖️' },
   { name: 'Technology', icon: '💻' },
@@ -15,21 +14,46 @@ const categories = [
   { name: 'Education', icon: '📚' },
   { name: 'Beauty', icon: '💄' },
   { name: 'Professional', icon: '💼' },
+  { name: 'Optometry', icon: '👁️' },
+  { name: 'Dentistry', icon: '🦷' },
+  { name: 'Pediatric Dentistry', icon: '🧸' },
+  { name: 'Orthodontics', icon: '😁' },
+  { name: 'Periodontics', icon: '🩺' },
+  { name: 'Endodontics', icon: '✨' },
 ]
 
 function Home() {
+  const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [zipCode, setZipCode] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
 
   function handleCategoryClick(category: string) {
     setSelectedCategory(category)
+    navigate({
+      to: '/results',
+      search: {
+        category,
+        zip: zipCode.trim(),
+      },
+    })
   }
 
   function handleSearch() {
-    if (search.trim()) {
-      setSelectedCategory(search.trim())
+    const category = search.trim() || selectedCategory
+
+    if (!category) {
+      return
     }
+
+    setSelectedCategory(category)
+    navigate({
+      to: '/results',
+      search: {
+        category,
+        zip: zipCode.trim(),
+      },
+    })
   }
 
   return (
@@ -93,6 +117,17 @@ function Home() {
               />
             </div>
 
+            <input
+              className="search-zip-input"
+              type="text"
+              value={zipCode}
+              onChange={(event) => setZipCode(event.target.value)}
+              placeholder="ZIP code (optional)"
+              maxLength={5}
+              inputMode="numeric"
+              aria-label="ZIP code (optional)"
+            />
+
             <button
               type="button"
               className="search-button"
@@ -143,7 +178,7 @@ function Home() {
                   aria-label="ZIP code"
                 />
 
-                <button type="button">
+                <button type="button" onClick={handleSearch}>
                   Find nearby
                 </button>
 
